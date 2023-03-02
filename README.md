@@ -4,6 +4,8 @@
 A simple interactive tree rendering app. Clicking selects a node, hovering another highlights the path and distance to the selected node
 The tree node positioning is optimised so it never gets wider than the widest depth. Parent nodes are aligned by the weight of their descendants
 
+Run `yarn start` initially to download dependencies before `yarn start`
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
