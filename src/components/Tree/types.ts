@@ -13,18 +13,18 @@ export interface AlignTreeNodesParam {
 export interface TreeParams {
     descendants: number;
     treeMaxWidth: number;
-    siblingsMap: Map<number,number[]>;
-    nodeMap: Map<number,PositionedNode>;
+    siblingsMap: Map<number,string[]>;
+    nodeMap: Map<string,PositionedNode>;
 }
 
 export interface NodeSelectionProps {
-    selectedNodeId: number;
-    setSelectedNodeId:  Dispatch<SetStateAction<number>>;
-    hoveredNodeId: number;
-    setHoveredNodeId:  Dispatch<SetStateAction<number>>;
+    selectedNodeId: string;
+    setSelectedNodeId:  Dispatch<SetStateAction<string>>;
+    hoveredNodeId: string;
+    setHoveredNodeId:  Dispatch<SetStateAction<string>>;
 
     distance: number;
-    highlightPathIds: number[];
+    highlightPathIds: string[];
 }
 export interface NodeAlignmentProps {
     x: number;

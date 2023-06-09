@@ -1,0 +1,25 @@
+{
+  "id":"0x3ffb54ac",
+  "key":2.936946,
+  "value":4097.000000,
+  "left":"0x3ffb54c0",
+  "right":"0x0",
+  "children":[
+    {
+      "id":"0x3ffb54c0",
+      "key":2.922525,
+      "value":4098.000000,
+      "left":"0x3ffb54d4",
+      "right":"0x0",
+      "children":[
+        {
+          "id":"0x3ffb54d4",
+          "key":2.908113,
+          "value":4099.000000,
+          "left":"0x0",
+          "right":"0x0"
+        }
+      ]
+    }
+  ]
+}

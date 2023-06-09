@@ -1,7 +1,7 @@
 import {Node, PositionedNode} from "../../types/Node";
 import {AlignTreeNodesParam, TreeParams} from "./types";
 
-export const calcDistance = (nodeId1: number, nodeId2: number, treeParams: TreeParams): {distance: number, highlightPathIds: number[]} => {
+export const calcDistance = (nodeId1: string, nodeId2: string, treeParams: TreeParams): {distance: number, highlightPathIds: string[]} => {
     const returnValue = {
         distance: 0,
         highlightPathIds: []
@@ -9,18 +9,18 @@ export const calcDistance = (nodeId1: number, nodeId2: number, treeParams: TreeP
 
     const {nodeMap} = treeParams;
 
-    if(nodeId1 === -1 || nodeId2 === -1 || nodeId1 === nodeId2) {
+    if(nodeId1 === "-1" || nodeId2 === "-1" || nodeId1 === nodeId2) {
         return returnValue
     }
 
     let idPair = [nodeId1, nodeId2];
     let workIndex = 0;
-    let touchedNodes: number[][] = [[],[]];
+    let touchedNodes: string[][] = [[],[]];
     let commonAncestor = null;
 
     while(!commonAncestor) {
         touchedNodes[workIndex].push(idPair[workIndex])
-        const parentId = (nodeMap.get(idPair[workIndex]) || {parentId: -1}).parentId
+        const parentId = (nodeMap.get(idPair[workIndex]) || {parentId: "-1"}).parentId
         idPair[workIndex] = parentId;
         workIndex = Math.abs(workIndex-1);
         commonAncestor = touchedNodes[0].find(node => touchedNodes[1].includes(node))
@@ -35,7 +35,7 @@ export const calcDistance = (nodeId1: number, nodeId2: number, treeParams: TreeP
 }
 const sumWeightAtDepth = (node: PositionedNode, treeParams: TreeParams ):number => {
     const {siblingsMap, nodeMap} = treeParams;
-    return Array.from(siblingsMap.get(node. depth) || [])
+    return Array.from(siblingsMap.get(node.depth) || [])
         .reduce((acc, siblingId) => acc + (nodeMap.get(siblingId) || {weight: 0}).weight, 0);
 }
 const calcNodeSpace = (node: PositionedNode, treeParams: TreeParams, alignParams: AlignTreeNodesParam) => {
@@ -51,7 +51,7 @@ const calcNodeSpace = (node: PositionedNode, treeParams: TreeParams, alignParams
         const depthWeight = sumWeightAtDepth(node, treeParams);
         const maxHeight = (fullNodeHeight * treeMaxWidth);
         const freeSpace = maxHeight - (fullNodeHeight * siblingsNum)
-        return fullNodeHeight + freeSpace * (node.weight / depthWeight)
+        return fullNodeHeight + freeSpace * (depthWeight ? (node.weight / depthWeight) : 1/siblingsNum)
     } else {
         return fullNodeHeight;
     }
@@ -164,13 +164,16 @@ const positionNodes = (
 const analyzeTree = (
     node: PositionedNode,
     depth: number = 0,
-    parentId: number = -1,
-    siblingsMap: Map<number,number[]> = new Map<number,number[]>([[0, [1]]]),
-    nodeMap: Map<number,PositionedNode> = new Map<number,PositionedNode>(),
+    parentId: string = "-1",
+    siblingsMap: Map<number,string[]> = new Map<number,string[]>(),
+    nodeMap: Map<string,PositionedNode> = new Map<string,PositionedNode>(),
 ):TreeParams => {
     let numDescendants = 0;
 
     nodeMap.set(node.id, node);
+    if(parentId == "-1") {
+        siblingsMap.set(0, [node.id]);
+    }
     if(node.children && node.children.length) {
         numDescendants += node.children.length;
         const siblings = node.children.map(child => child.id);
@@ -199,5 +202,12 @@ export const alignTreeNodes = (node: Node, alignParams: AlignTreeNodesParam) => 
        root: positionNodes(node as PositionedNode, alignParams, treeParams),
        treeParams
    }
+}
+
+export const calcNodeDiff = (node1: Node, node2: Node) => {
+    const flatNodes1 = Array.from(analyzeTree(node1 as PositionedNode).nodeMap, ([, node]) => JSON.stringify({key: `${node.key}`, value: node.value}))
+    const flatNodes2 = Array.from(analyzeTree(node2 as PositionedNode).nodeMap, ([, node]) => JSON.stringify({key: `${node.key}`, value: node.value}))
+
+    return [...flatNodes2.filter(node => !flatNodes1.includes(node)), ...flatNodes1.filter(node => !flatNodes2.includes(node))].map(node => JSON.parse(node))
 }
 
